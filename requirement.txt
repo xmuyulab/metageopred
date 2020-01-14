@@ -1,0 +1,7 @@
+numpy
+pandas
+sklearn='0.21.2'
+lightgbm
+xgboost
+pyproj
+pyKriging
