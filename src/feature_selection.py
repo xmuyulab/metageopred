@@ -27,7 +27,6 @@ from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 warnings.filterwarnings("ignore")
 
-from data_process import tsne_scatter
 from data_process import coord_transf, affine_transform
 from data_process import binning_data,calculate_centroids 
 
@@ -183,10 +182,15 @@ def feature_selection(data, label):
 
 
 if  __name__ == "__main__":
+
+    #load data
+    tag = 'kraken_data'
+
     # load train data
-    train_data = pd.read_csv("../data/train_data.csv", index_col=0)
+    train_data = pd.read_csv("../data/{}/train_data.csv".format(tag), index_col=0)
     # load test data
-    test_data = pd.read_csv('../data/test_data.csv', index_col=0)
+    test_data = pd.read_csv('../data/{}/test_data.csv'.format(tag), index_col=0)
+
     # binning data
     all_data = pd.merge(train_data, test_data, left_index=True, right_index=True)
     all_data = binning_data(all_data.T)
@@ -207,7 +211,7 @@ if  __name__ == "__main__":
     
     def multipro(i):
         x, y = tmp.values, tmp["city"].values                         
-        n = 10  # Number of re-shuffling & splitting iterations
+        n = 100  # Number of re-shuffling & splitting iterations
         # Stratified ShuffleSplit cross-validator
         sp = StratifiedShuffleSplit(n_splits=n, test_size=0.2, random_state=0)
         acc_list = []
@@ -230,13 +234,18 @@ if  __name__ == "__main__":
             acc += clf.score(X_test, y_test)
             acc_list.append(clf.score(X_test, y_test))
         
-        with open('../feature_extration_result/feature_extration_result.txt','a') as f:
+        with open('../feature_extration_result/feature_extration_result_{}.txt'.format(tag),'a') as f:
             f.write('{}\t{}\t{}\n'.format(i,acc / n, np.min(acc_list)))
         print(i)
         print("feature number:{}".format(len(key)))
         print("average acc score:{}".format(acc / n))
         print("minimum acc score:{}".format(np.min(acc_list)))
         return None
-    multipro(50)
-    #with Pool(72) as p:
-    #     result = p.map(multipro, [i for i in range(1,100)])
+    
+    # with Pool(72) as p:
+    #     result = p.map(multipro, [i for i in range(1,150)])
+    key = feature_selection_wrapper(tmp[train_data.columns], tmp[['city']],50)
+    with open('../feature_extration_result/feature_list_{}.txt'.format(tag),'w') as f:
+        for i in key:
+            f.write('{}\n'.format(i))
+    

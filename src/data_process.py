@@ -7,7 +7,8 @@ import pandas as pd
 import sys
 import os
 
-from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
+# from sklearn.manifold import TSNE
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from pyproj import Proj, transform
 from multiprocessing import Pool
@@ -43,7 +44,14 @@ def binning_data(data):
 
 def affine_fit(from_pts, to_pts):
     """
-    Affine transformation
+    Fit an affine transformation to given point sets.
+    More precisely: solve (least squares fit) matrix 'A'and 't' from
+    'p ~= A*q+t', given vectors 'p' and 'q'.
+    Works with arbitrary dimensional vectors (2d, 3d, 4d...).
+    Written by Jarno Elonen <elonen@iki.fi> in 2007.
+    Placed in Public Domain.
+    Based on paper "Fitting affine and orthogonal transformations
+    between two sets of points, by Helmuth Späth (2003).
     """
     q = from_pts
     p = to_pts
@@ -128,15 +136,15 @@ def affine_fit(from_pts, to_pts):
     return transformation()
 
 
-def calculate_centroids(tsne_data):
+def calculate_centroids(pca_data):
     """
     Calculate centorids
     """
-    assert 'tsne_1' in tsne_data.columns
-    assert 'tsne_2' in tsne_data.columns
-    assert 'city' in tsne_data.columns
-    X = tsne_data[['tsne_1','tsne_2']].values
-    y = tsne_data['city'].values
+    assert 'pc_1' in pca_data.columns
+    assert 'pc_2' in pca_data.columns
+    assert 'city' in pca_data.columns
+    X = pca_data[['pc_1','pc_2']].values
+    y = pca_data['city'].values
     clf = NearestCentroid()
     clf.fit(X, y)
     return clf.classes_, clf.centroids_
@@ -167,7 +175,7 @@ def affine_transform(from_pt, to_pt,src_pt):
     return tar_pt
 
 
-def tsne_scatter(data,feature,traget,draw=False):
+def pca_scatter(data,feature,traget,draw=False):
     """
     input:
         data: data is a dataframe with sample index and feature is a list
@@ -179,14 +187,15 @@ def tsne_scatter(data,feature,traget,draw=False):
         tsne_scatter(data,[feature1,feature2,feature3],traget)
     """
     assert len(feature)>2
-    X_tsne = TSNE(n_components=2,
-                  learning_rate=30,
-                  random_state=np.random.seed(10),
-                  metric='euclidean').fit_transform(data[feature].values)
-    sample_tsne = pd.DataFrame(index=data.index,columns=['tsne_1','tsne_2'],data=X_tsne)
+#     X_tsne = TSNE(n_components=2,
+#                   learning_rate=30,
+#                   random_state=np.random.seed(10),
+#                   metric='euclidean').fit_transform(data[feature].values)
+    X_pca = PCA(n_components=2).fit_transform(data[feature].values)
+    sample_pca = pd.DataFrame(index=data.index,columns=['pc_1','pc_2'],data=X_pca)
     
-    tsne_data = pd.merge(data[[traget]],sample_tsne,right_index=True,left_index=True)
-    #if draw:
-    #    plt.figure(figsize=(13,9))
-    #    ax = sns.scatterplot(x="tsne_1", y="tsne_2", hue=traget,data=tsne_data)
-    return tsne_data
+    pca_data = pd.merge(data[[traget]],sample_pca,right_index=True,left_index=True)
+    if draw:
+       plt.figure(figsize=(13,9))
+       ax = sns.scatterplot(x="pc_1", y="pc_2", hue=traget,data=pca_data)
+    return pca_data

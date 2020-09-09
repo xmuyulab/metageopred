@@ -1,0 +1,50 @@
+                    Exiguobacterium sp. AT1b
+                    Lactobacillus delbrueckii subsp. bulgaricus
+                    Mycoplasma wenyonii str. Massachusetts
+                    Parascardovia denticolens DSM 10105 = JCM 12538
+                    Pseudomonas protegens Cab57
+                    Rubrobacter xylanophilus DSM 9941
+                    Salmonella enterica subsp. enterica serovar Choleraesuis
+                    Sphingobacteriaceae bacterium GW460-11-11-14-LB5
+                    Spirosoma sp. HA7
+                    Staphylococcus capitis subsp. capitis
+                    Stenotrophomonas maltophilia D457
+                    Streptococcus salivarius JIM8777
+                    Xanthomonas campestris pv. campestris str. ATCC 33913
+                    Xanthomonas citri pv. glycines
+                  Bacillus flexus
+                  Cellulomonas flavigena
+                  Clostridium botulinum
+                  Deinococcus swuensis
+                  Deinococcus wulumuqiensis
+                  Gordonia bronchialis
+                  Methylobacterium oryzae CBMB20
+                  Mycoplasma wenyonii
+                  Nostoc sp. CENA543
+                  Pseudomonas corrugata
+                  Pseudomonas oleovorans/pseudoalcaligenes group
+                  Staphylococcus equorum
+                  Winogradskyella
+                Achromobacter spanius
+                Acidisphaera sp. G45-3
+                Aeromonas media
+                Bradyrhizobium sp. SK17
+                Comamonas aquatica
+                Fusobacterium hwasookii
+                Halomonas chromatireducens
+                Leclercia sp. LSNIH1
+                Megasphaera
+                Methylovulum psychrotolerans
+                Polynucleobacter necessarius
+                Pseudomonas sp. S-6-2
+                Ruminiclostridium
+                Shewanella baltica
+                Shewanella sp. WE21
+                Sphingobium yanoikuyae
+                Sphingopyxis sp. MG
+                Stenotrophomonas rhizophila
+              Azospira
+              Campylobacteraceae
+              Granulicella
+            Desulfuromonadales
+      Caulimoviridae

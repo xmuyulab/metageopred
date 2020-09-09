@@ -20,7 +20,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import train_test_split
-from sklearn.manifold import TSNE
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from pyproj import Proj, transform
 from pyKriging import kriging
@@ -33,7 +32,7 @@ from feature_selection import feature_selection_wrapper
 from feature_selection import feature_selection_embeded
 from feature_selection import feature_selection
     
-from data_process import tsne_scatter
+from data_process import pca_scatter
 from data_process import coord_transf, affine_transform
 from data_process import binning_data,calculate_centroids     
 
@@ -42,15 +41,20 @@ world_city = pd.read_csv('../data/worldcities_new.csv')
 europe = world_city[(world_city['y']<9000000)&(world_city['y']>4500000)&(world_city['x']>-1000000)&(world_city['x']<3500000)]
 europe = europe[~europe.population.isna()]
 
-all_sample = pd.read_csv('../data/train_data.csv',index_col=0).T
+tag = 'kraken_data'
+
+all_sample = pd.read_csv('../data/{}/train_data.csv'.format(tag),index_col=0).T
 all_feature = list(all_sample.columns)
 all_sample_label = [i.split('_')[3].split('-')[0] for i in all_sample.index]
 all_sample['city'] = all_sample_label
 # test data
-expand_sample = pd.read_csv('../data/test_data.csv',index_col=0).T
+expand_sample = pd.read_csv('../data/{}/test_data.csv'.format(tag),index_col=0).T
 expand_feature = list(expand_sample.columns)
-expand_label = pd.read_csv('../data/test_true_label.csv')
-expand_sample = pd.merge(pd.read_csv('../data/test_true_label.csv',index_col=1),expand_sample,left_index=True,right_index=True)
+
+expand_sample = pd.merge(pd.read_csv('../data/test_true_label.csv',index_col=1),
+                         expand_sample,
+                         left_index=True,
+                         right_index=True)
 
 all_sample = pd.concat([all_sample,expand_sample])
 all_data_label = all_sample['city'].copy()
@@ -83,7 +87,7 @@ def random_test(Number_test,test_city):
     #key_walr = feature_selection_wrapper(train_data[all_feature], train_data[['city']])
 
     #key = list(set(key_enrf+key_walr))
-    key = list(pd.read_table('../feature_extration_result/feature_list.txt',header=None)[0])
+    key = list(pd.read_table('../feature_extration_result/feature_list_{}.txt'.format(tag),header=None)[0])
     # model
     clf = LogisticRegression(penalty="l2", 
                             C=0.5, 
@@ -111,9 +115,9 @@ def random_test(Number_test,test_city):
     print(Number_test)
     
     # affine transform
-    tsne_data = tsne_scatter(train_data,key,'city')
+    pca_data = pca_scatter(train_data,key,'city')
     # calculate bio-centroids point 
-    city_label, city_centroids = calculate_centroids(tsne_data)
+    city_label, city_centroids = calculate_centroids(pca_data)
     # transform geographic point into biological point
     to_pts = city_centroids[[list(city_label).index(i) for i in city_label]]
     from_pts = europe[europe.city_ascii.isin([city_name[i] for i in city_label])][['x','y']].values
@@ -159,9 +163,11 @@ def random_test(Number_test,test_city):
         #geo_rseult.append(tmp_map[tmp_map.city_ascii==test_city]['GEOprob'].values[0])
         bio_result.append(bio_kriging.predict([tmp_map[tmp_map.city_ascii==city_name[test_city]]['bio_x'].values[0],tmp_map[tmp_map.city_ascii==city_name[test_city]]['bio_y'].values[0]]))
         geo_rseult.append(geo_kriging.predict([tmp_map[tmp_map.city_ascii==city_name[test_city]]['x'].values[0],tmp_map[tmp_map.city_ascii==city_name[test_city]]['y'].values[0]]))
-    with open('../random_test/bio_shuffle_{}_result.txt'.format(test_city),'a') as f:
+    if not os.path.isdir('../random_test/{}'.format(tag)):
+        os.makedirs('../random_test/{}'.format(tag))
+    with open('../random_test/{}/bio_shuffle_{}_result.txt'.format(tag,test_city),'a') as f:
         f.write('{}\n'.format(bio_result))
-    with open('../random_test/geo_shuffle_{}_result.txt'.format(test_city),'a') as f:
+    with open('../random_test/{}/geo_shuffle_{}_result.txt'.format(tag,test_city),'a') as f:
         f.write('{}\n'.format(geo_rseult))
     return None
 
