@@ -4,7 +4,7 @@ Studies on metagenomic data of environmental microbial samples found that microb
 We present a machine learning framework to determine the geolocations from metagenomics profiling of microbial samples.
 
 ### Framework
-![The flowchart of the proposed framework](./img/camda-flowchart.png)
+![The flowchart of the proposed framework](./img/camda-flowchart.pdf)
 
 #### Data Downloaded and Preprocess
 We downloaded the raw metagenomic sequencing data from the [CAMDA 2019 Metagenomics Forensic Challenge](http://camda2019.camda.info/) provided by CAMDA in partnership with MetaSUB International Consortium. And the raw metagenomic sequencing data were preprocessed by [**fastp** (v.0.19.4)](http://opengene.org/fastp/fastp) for quality control including automatic filtering, trimming, and error removing. 
